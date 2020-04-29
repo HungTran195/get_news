@@ -1,10 +1,10 @@
-import requests
 import bs4
-import re
 import math
 
 
 class Node:
+    """Extract content from html"""
+
     def __init__(self, soup, children=[], is_string=False):
         self.soup = soup
         self.parent = None
@@ -15,40 +15,7 @@ class Node:
 
     @classmethod
     def create(cls, soup):
-        soup = Node.preprocess(soup)
         return Node.create_nodes(soup)
-
-    @classmethod
-    def preprocess(cls, soup):
-        # Unwarp tags
-        merging_tags = ['p', 'br', 'li', 'table', 'tbody', 'tr', 'td', 'theader', 'tfoot']
-        tags = soup.find_all(merging_tags)
-        for tag in tags:
-            tag.unwrap()
-        # Remove tags:
-        remove_tag = ['head', 'script', 'link', 'style', 'form', 'option', 'header', 'footer', 'nav', 'noscript', 'aside']
-        tags = soup.find_all(remove_tag)
-
-        for tag in tags:
-            tag.decompose()
-
-        # Remove hidden tags:
-        for hidden in soup.find_all(style=re.compile(r'display:\s*none')):
-            hidden.decompose()
-
-        return soup
-
-    @classmethod
-    def is_valid_soup_node(cls, soup_node):
-        if isinstance(soup_node, bs4.element.Comment):
-            return False
-        if isinstance(soup_node, bs4.element.NavigableString):
-            if soup_node.string.strip():
-                return True
-            else:
-                return False
-        else:
-            return True
 
     @classmethod
     def create_nodes(cls, soup):
@@ -65,6 +32,18 @@ class Node:
 
         elif isinstance(soup, bs4.element.NavigableString):
             return Node(soup)
+
+    @classmethod
+    def is_valid_soup_node(cls, soup_node):
+        if isinstance(soup_node, bs4.element.Comment):
+            return False
+        if isinstance(soup_node, bs4.element.NavigableString):
+            if soup_node.string.strip():
+                return True
+            else:
+                return False
+        else:
+            return True
 
     def get_features(self):
         if isinstance(self.soup, bs4.element.NavigableString):
@@ -153,7 +132,7 @@ class Node:
                     best_node = node
                     best_score = node.density_sum
 
-        best_node = bs4.BeautifulSoup(str(best_node.soup))
+        best_node = bs4.BeautifulSoup(str(best_node.soup), 'lxml')
         text = ''
         for child in best_node.descendants:
             if isinstance(child, bs4.element.NavigableString):
