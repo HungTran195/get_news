@@ -18,7 +18,7 @@ def clean_tags(html):
         tag.unwrap()
 
     # Remove tags:
-    remove_tag = ['head', 'script', 'link', 'style', 'form', 'option', 'header', 'footer', 'nav', 'noscript', 'aside']
+    remove_tag = ['head', 'script', 'link', 'style', 'form', 'option', 'footer', 'nav', 'noscript', 'aside']
     tags = html.find_all(remove_tag)
     for tag in tags:
         tag.decompose()
