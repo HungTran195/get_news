@@ -2,7 +2,7 @@ import bs4
 import math
 
 
-class Node:
+class Content_Extractor:
     """Extract content from html"""
 
     def __init__(self, soup, children=[], is_string=False):
@@ -15,15 +15,15 @@ class Node:
 
     @classmethod
     def create(cls, soup):
-        return Node.create_nodes(soup)
+        return Content_Extractor.create_nodes(soup)
 
     @classmethod
     def create_nodes(cls, soup):
         if isinstance(soup, bs4.element.Tag) or isinstance(soup, bs4.BeautifulSoup):
-            valid_children = list(filter(Node.is_valid_soup_node, soup.children))
-            children = list(map(Node.create_nodes, valid_children))
+            valid_children = list(filter(Content_Extractor.is_valid_soup_node, soup.children))
+            children = list(map(Content_Extractor.create_nodes, valid_children))
 
-            parent_of_child = Node(soup, children)
+            parent_of_child = Content_Extractor(soup, children)
 
             for child in children:
                 child.parent = parent_of_child
@@ -31,7 +31,7 @@ class Node:
             return parent_of_child
 
         elif isinstance(soup, bs4.element.NavigableString):
-            return Node(soup)
+            return Content_Extractor(soup)
 
     @classmethod
     def is_valid_soup_node(cls, soup_node):
@@ -117,7 +117,7 @@ class Node:
         threshhold = min(path_to_body, key=(lambda x: x.composite_text_density))
         self.threshhold = threshhold.composite_text_density
 
-    def extract_content(self):
+    def extract(self):
         self.mark_content()
         self.find_max_density_sum()
 
