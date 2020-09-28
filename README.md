@@ -6,17 +6,8 @@ Reference:  [DOM Based Content Extraction via Text Density](http://ofey.me/paper
 - Extract content from an url:
 
 ```
-from article import Article
-news = Article(url)
-news.extract()
+from .extractors import Extractor
+news = Extractor(url)
+news.extract_content()
 ```
-
-The content extracted in save within `news.content`
-
-- Get titles and urls of news from a website:
-```
-from get_title import Get_Articles
-news = Get_Articles(url)
-news.get_article()
-```
-The title of each news if saved in: `news.news_title` and its url is in `news.news_url`
+The extracted content is saved in: news.title, news.published_time, news.authors, news.img_of_content_url, news.content
