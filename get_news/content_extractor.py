@@ -20,8 +20,10 @@ class Content_Extractor:
     @classmethod
     def create_nodes(cls, soup):
         if isinstance(soup, bs4.element.Tag) or isinstance(soup, bs4.BeautifulSoup):
-            valid_children = list(filter(Content_Extractor.is_valid_soup_node, soup.children))
-            children = list(map(Content_Extractor.create_nodes, valid_children))
+            valid_children = list(
+                filter(Content_Extractor.is_valid_soup_node, soup.children))
+            children = list(
+                map(Content_Extractor.create_nodes, valid_children))
 
             parent_of_child = Content_Extractor(soup, children)
 
@@ -61,7 +63,8 @@ class Content_Extractor:
                 self.link_characters = self.characters
                 self.link_tags = 1
             else:
-                self.link_characters = sum(n.link_characters for n in self.children)
+                self.link_characters = sum(
+                    n.link_characters for n in self.children)
                 self.link_tags = sum(n.link_tags for n in self.children)
 
         self.text_density = self.characters / max(1, self.tags)
@@ -83,18 +86,25 @@ class Content_Extractor:
         body = self
 
         def composite_text_density(node):
-            prop_hyperlink_tag = 1.0 * max(1, node.tags) / max(1, node.link_tags)
-            prop_hyperlink_characters = 1.0 * max(1, node.characters) / max(1, node.link_characters)
+            prop_hyperlink_tag = 1.0 * \
+                max(1, node.tags) / max(1, node.link_tags)
+            prop_hyperlink_characters = 1.0 * \
+                max(1, node.characters) / max(1, node.link_characters)
 
-            a = 1.0 * max(1, node.characters) * max(1, node.link_characters) / max(1, (node.characters - node.link_characters))
-            b = 1.0 * max(1, body.link_characters) * max(1, node.characters) / max(1, body.characters)
+            a = 1.0 * max(1, node.characters) * max(1, node.link_characters) / \
+                max(1, (node.characters - node.link_characters))
+            b = 1.0 * max(1, body.link_characters) * \
+                max(1, node.characters) / max(1, body.characters)
 
             natural_log = math.log(a + b + math.exp(1))
-            node.composite_text_density = node.text_density * math.log((prop_hyperlink_characters * prop_hyperlink_tag), natural_log)
+            node.composite_text_density = node.text_density * \
+                math.log((prop_hyperlink_characters *
+                          prop_hyperlink_tag), natural_log)
 
         def density_sum(node):
             if node.children and len(node.children) > 0:
-                node.density_sum = sum(n.composite_text_density for n in node.children)
+                node.density_sum = sum(
+                    n.composite_text_density for n in node.children)
             else:
                 node.density_sum = node.composite_text_density
 
@@ -114,7 +124,8 @@ class Content_Extractor:
                 node_with_max_density_sum = node
 
         path_to_body = self.get_path(node_with_max_density_sum)
-        threshhold = min(path_to_body, key=(lambda x: x.composite_text_density))
+        threshhold = min(path_to_body, key=(
+            lambda x: x.composite_text_density))
         self.threshhold = threshhold.composite_text_density
 
     def extract(self):
@@ -124,7 +135,6 @@ class Content_Extractor:
         best_score = float('-inf')
         best_node = None
         for node in self.get_child():
-            #         for node in self.soup.decendants:
             if isinstance(node, bs4.element.NavigableString):
                 continue
             if node.density_sum > self.threshhold:
