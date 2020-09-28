@@ -23,7 +23,7 @@ class Extractor:
             self.parser = 'lxml'
         self.content = ''
         self.published_time = ''
-        self.authors = []
+        self.authors = ''
 
     def extract_content(self):
         url = self.url
