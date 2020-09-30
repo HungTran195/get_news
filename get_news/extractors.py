@@ -249,15 +249,6 @@ class Extractor:
 
         return html
 
-        article_tags = []
-        tags = html.find_all("a")
-        for tree in tags:
-            if 'href' in tree.attrs and tree.string:
-                if len(tree.string.strip()) > self.MIN_TITLE_LENGTH:
-                    article_tags.append(tree)
-
-        return article_tags
-
     def get_content(self, html):
         cleaned_html = self.clean_tags(html)
 
