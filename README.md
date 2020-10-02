@@ -2,6 +2,8 @@
 
 Reference:  [DOM Based Content Extraction via Text Density](http://ofey.me/papers/cetd-sigir11.pdf)
 
+Demo: https://web-content-extraction.herokuapp.com/
+
 ### How to use
 - Extract content from an url:
 
